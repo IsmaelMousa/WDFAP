@@ -40,7 +40,7 @@ make install
 
 ## Usage
 
-The **DFAP** provides a user-friendly interface for fetching articles. For now you can choose to fetch articles from
+The **DFAP** provides a user-friendly interface for fetching articles. For now, you can choose to fetch articles from
 **Wikipedia**, **Google News**, or both simultaneously. The fetched data is stored in the `data/` directory in different
 formats
 for easy access and analysis.
@@ -51,11 +51,13 @@ for easy access and analysis.
 make fetch
 ```
 
-2. After that, the terminal will ask you:
+2. After that the terminal will ask you a few questions, here is an example with results:
 
-```
+<div align="center">
 
-```
+![Example](images/demo.gif)
+
+</div>
 
 ## Structure
 
