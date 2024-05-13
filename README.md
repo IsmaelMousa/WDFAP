@@ -1,23 +1,28 @@
-# DFAP (Data Fetcher And Preparer)
+# WDFAP: Web Data Fetcher And Preparer
 
-Welcome to the **DFAP** project! This tool allows you to fetch articles from **web sources** in various
-formats such as `csv`, `json`, `xlsx`, and `parquet`, providing you with a versatile way to access and analyze diverse
-sets of data.
+**WDFAP** is a Python tool that enables you to **fetch**, **clean**, **prepare**, **label**, and **upload** articles from web sources in
+various
+formats such as `csv`, `json`, `xlsx`, and `parquet`. It provides you with a versatile way to access, analyze, and manage
+diverse sets of data.
+
+> [!NOTE]
+>
+> Please note that currently, only the fetching feature is available.
 
 ## Installation
 
-To get started with the **DFAP**, follow these simple steps:
+To get started with the **WDFAP**, follow these simple steps:
 
 1. Clone this repository to your local machine:
 
 ```zsh
-git clone git@github.com:IsmaelMousa/DFAP.git
+git clone git@github.com:IsmaelMousa/WDFAP.git
 ```
 
-2. Navigate to the **DFAP** directory:
+2. Navigate to the **WDFAP** directory:
 
 ```zsh
-cd DFAP
+cd WDFAP
 ```
 
 3. Setup virtual environment:
@@ -32,23 +37,23 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-5. Install the required dependencies:
+5. Setup **WDFAP**:
 
 ```zsh
-make install
+make setup
 ```
 
 ## Usage
 
-The **DFAP** provides a user-friendly interface for fetching articles. For now, you can choose to fetch articles from
+The **WDFAP** provides a user-friendly interface for fetching articles. For now, you can choose to fetch articles from
 **Wikipedia**, **Google News**, or both simultaneously. The fetched data is stored in the `data/` directory in different
 formats
 for easy access and analysis.
 
-1. Run the **DFAP** to start fetching articles
+1. Run the **WDFAP**:
 
 ```zsh
-make fetch
+make start
 ```
 
 2. After that the terminal will ask you a few questions, here is an example with results:
@@ -59,33 +64,53 @@ make fetch
 
 </div>
 
-## Structure
+## Modules
 
-The **DFAP** files is structured as follows:
+Here is a summary for the purpose of each major module or component in **WDFAP**:
 
-- **fetcher.py**: Contains the main logic for fetching articles from **Wikipedia** and **Google News** based on user
-  input.
-- **google_news.py**: For fetching **Google News** articles asynchronously using aiohttp.
-- **wiki.py**: For fetching **Wikipedia** articles asynchronously using aiohttp.
-- **fetcher.py**: Entry point of the application, It prompts the user to choose which data to fetch and calls the
-  respective functions.
-- **Makefile**: Provides commands for installing dependencies and running the application.
-- **requirements.txt**: Lists all the required dependencies for the project.
-- **data/**: Directory where fetched articles are stored in various formats (`csv`, `json`, `xlsx`, `parquet`).
+<details>
+  <summary>Click for more information:</summary>
 
-## Libraries/Dependencies
+|       Module       | Purpose                                                                                                                                                                                                                                    |
+|:------------------:|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|      `tools`       | Provides utility functions and scripts for orchestrating the fetching, cleaning, labeling, and uploading of data from various sources. Initially includes a script for user interaction to fetch articles from Web Sources asynchronously. |
+|     `sources`      | Provides modules for fetching articles asynchronously from different sources like Google News & Wikipedia.                                                                                                                                 |
+|       `data`       | Storage Where fetched articles are stored in various formats such as `csv`, `json`, `xlsx` and `parquet`.                                                                                                                                  |
+|      `errors`      | Prepares and customizes exceptions for handling specific issues.                                                                                                                                                                           |
+|      `utils`       | Houses common utilities/logic utilized throughout the project.                                                                                                                                                                             |
+|     `configs`      | Contains main configurations for both development and production stages.                                                                                                                                                                   |
+|     `setup.py`     | Configures the project metadata and dependencies for streamlined installation.                                                                                                                                                             |
+|     `main.py`      | Serves as the entry point, initiating the project.                                                                                                                                                                                         |
+|     `Makefile`     | Provides commands for installing dependencies and running the application.                                                                                                                                                                 |
+| `requierments.txt` | Lists all the required dependencies for running the application.                                                                                                                                                                           |
 
-- **aiohttp**: Used for async **HTTP client/server** for asyncio.
-- **asyncio**: Used for async **I/O**.
-- **beautifulsoup4**: Used for parsing and extracting structured data from **HTML** content.
-- **pandas**: Used for data manipulation.
-- **csv**: Used for reading and writing `CSV` files.
-- **json**: Used for encoding and decoding `JSON` data.
-- **os**: Used for interacting with the operating system.
-- **sys**: Used for interacting with the Python interpreter.
-- **tqdm**: Used for adding progress bars to loops.
-- **feedparser**: Used for parsing RSS and Atom feeds.
-- **newspaper**: Used for extracting and curating articles from websites.
-- **openpyxl**: Used for reading and writing `Excel` files.
-- **pyarrow**: Used for working with Apache Arrow data.
-- **fastparquet**: Used for working with `Parquet` files
+</details>
+
+## About Dependencies
+
+Here is an overview of the dependencies/packages used in the **WDFAP** along with their respective usage:
+
+<details>
+  <summary>Click for more information:</summary>
+
+|    Dependency    | Usage                                                                                                                                                          |
+|:----------------:|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `beautifulsoup4` | Offers powerful tools for parsing and navigating HTML documents, simplifying the extraction of structured data from web pages.                                 |
+|   `newspaper`    | Simplifies the extraction and curation of articles from online sources, streamlining the process of gathering news content.                                    |
+|   `feedparser`   | Parses RSS and Atom feeds, enabling extraction of syndicated content from websites and blogs.                                                                  |
+|    `asyncio`     | Facilitates asynchronous I/O operations, allowing for concurrent execution of tasks without blocking the event loop.                                           |
+|    `aiohttp`     | Provides asynchronous HTTP client/server functionality for asyncio, enabling efficient handling of web requests and responses.                                 |
+|     `pandas`     | Provides high-performance data manipulation and analysis tools, ideal for working with structured datasets.                                                    |
+|      `tqdm`      | Enhances loops with progress bars, providing visual feedback on the progress of iterative tasks, improving user experience and productivity.                   |
+|    `openpyxl`    | Facilitates reading from and writing to Excel files, enabling manipulation of spreadsheet data with Python.                                                    |
+|    `pyarrow`     | Provides tools for working with Apache Arrow data, an in-memory columnar data format, offering efficient data interchange between different systems.           |
+|  `fastparquet`   | Offers efficient reading and writing of Parquet files, a columnar storage format optimized for analytics workloads, enabling high-performance data processing. |
+
+</details>
+
+## Sources
+
+For now the available web sources are:
+
+- [Wikipedia](https://en.wikipedia.org/wiki/)
+- [Google News](https://news.google.com)
