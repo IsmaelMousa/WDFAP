@@ -12,6 +12,8 @@ from datetime import datetime
 import random
 from tqdm import tqdm
 
+from utils import get_config
+
 COLOR_BLUE = "\033[1;34m"
 COLOR_RED = "\033[1;31m"
 COLOR_RESET = "\033[0m"
@@ -31,7 +33,10 @@ async def fetch_google_news_articles(session: aiohttp.ClientSession,
         :return: None
     """
     try:
-        async with session.get("https://news.google.com/rss") as response:
+        sources = get_config().sources
+        google_news_url = sources.google_news
+
+        async with session.get(google_news_url) as response:
             response.raise_for_status()
             rss_feed = await response.text()
 
@@ -43,8 +48,11 @@ async def fetch_google_news_articles(session: aiohttp.ClientSession,
             article_id = 1
             for entry in articles[:num_articles]:
                 title = entry.get("title", "")
+
                 link = entry.get("link", "")
+
                 summary = entry.get("summary", "")
+
                 published_date = entry.get("published", "")
 
                 summary_text = BeautifulSoup(summary, features="html.parser").get_text()
@@ -91,7 +99,7 @@ async def main_google_news() -> None:
     """
     while True:
         try:
-            num_articles = int(input(COLOR_BLUE + "The Number of Google News Articles to Fetch > " + COLOR_RESET))
+            num_articles = int(input("\n" + "Enter The Number of Articles to Fetch >> " + COLOR_BLUE))
             if num_articles > 0:
                 break
             else:

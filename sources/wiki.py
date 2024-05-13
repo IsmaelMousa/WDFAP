@@ -8,6 +8,8 @@ from typing import Any
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
+from utils import get_config
+
 COLOR_BLUE = "\033[1;34m"
 COLOR_RED = "\033[1;31m"
 COLOR_RESET = "\033[0m"
@@ -27,7 +29,9 @@ async def fetch_wikipedia(session: aiohttp.ClientSession, article_number: int,
         :return: None
     """
     try:
-        async with session.get("https://en.wikipedia.org/wiki/Special:Random") as response:
+        sources = get_config().sources
+        wiki_url = sources.wiki
+        async with session.get(wiki_url) as response:
             response.raise_for_status()
 
             html = await response.text()
@@ -104,7 +108,7 @@ async def main_wikipedia() -> None:
     """
     while True:
         try:
-            num_articles = int(input(COLOR_BLUE + "The Number of Wikipedia Articles to Fetch > " + COLOR_RESET))
+            num_articles = int(input("\n" + "Enter The Number of Articles to Fetch >> " + COLOR_BLUE))
             if num_articles > 0:
                 break
             else:
