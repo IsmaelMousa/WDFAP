@@ -1,39 +1,40 @@
+from sys import exit
+
 import asyncio
-import sys
 
-from sources import main_google_news, main_wikipedia
+from sources import get_google_news, get_wiki
 
-COLOR_BLUE = "\033[1;34m"
-COLOR_GREEN = "\033[1;32m"
-COLOR_RED = "\033[1;31m"
-COLOR_RESET = "\033[0m"
+BLUE = "\033[1;34m"
+GREEN = "\033[1;32m"
+RED = "\033[1;31m"
+NORMAL = "\033[0m"
 
 
 async def main():
     while True:
-        print(COLOR_BLUE + "Which data would you like to fetch?" + COLOR_RESET + "\n")
-        print(COLOR_GREEN + ">> 1. Wikipedia Articles" + COLOR_RESET)
-        print(COLOR_GREEN + ">> 2. Google News Articles" + COLOR_RESET)
-        print(COLOR_GREEN + ">> 3. Both" + COLOR_RESET)
-        print(COLOR_RED + ">> 4. Cancel" + COLOR_RESET)
+        print(BLUE + "Which data would you like to fetch?" + NORMAL + "\n")
+        print(GREEN + ">> 1. Wikipedia Articles" + NORMAL)
+        print(GREEN + ">> 2. Google News Articles" + NORMAL)
+        print(GREEN + ">> 3. Both" + NORMAL)
+        print(RED + ">> 4. Cancel" + NORMAL)
 
-        choice = input("\nEnter Your Choice >> " + COLOR_BLUE)
+        choice = input("\nEnter Your Choice >> " + BLUE)
 
         match choice:
             case "1":
-                print(COLOR_BLUE + "Fetching Wikipedia Articles..." + COLOR_RESET)
-                await main_wikipedia()
+                print(BLUE + "Fetching Wikipedia Articles..." + NORMAL)
+                await get_wiki()
                 break
             case "2":
-                print(COLOR_BLUE + "Fetching Google News Articles..." + COLOR_RESET)
-                await main_google_news()
+                print(BLUE + "Fetching Google News Articles..." + NORMAL)
+                await get_google_news()
                 break
             case "3":
-                print(COLOR_BLUE + "Fetching Both Wikipedia and Google News Articles..." + COLOR_RESET)
-                await asyncio.gather(main_wikipedia(), main_google_news())
+                print(BLUE + "Fetching Both Wikipedia and Google News Articles..." + NORMAL)
+                await asyncio.gather(get_wiki(), get_google_news())
                 break
             case "4":
-                print(COLOR_RED + "Operation Canceled. Goodbye!" + COLOR_RESET)
-                sys.exit()
+                print(RED + "Operation Canceled. Goodbye!" + NORMAL)
+                exit()
             case _:
-                print(COLOR_RED + "Invalid choice. Please try again." + COLOR_RESET)
+                print(RED + "Invalid choice. Please try again." + NORMAL)
