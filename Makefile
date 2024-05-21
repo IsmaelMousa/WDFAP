@@ -9,3 +9,9 @@ setup:
 start:
 	@echo "\e[1;34mWelcome to WDFAP!\e[0m"
 	@python3 main.py
+
+# Development
+setup-dev:
+	@echo "\e[1;34mSetup In Progress...\e[0m"
+	@pip install .
+	@pip install -r requirements-dev.txt
