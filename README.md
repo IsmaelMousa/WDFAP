@@ -1,8 +1,10 @@
 # WDFAP: Web Data Fetcher And Preparer
 
-**WDFAP** is a Python tool that enables you to **fetch**, **clean**, **prepare**, **label**, and **upload** articles from web sources in
+**WDFAP** is a Python tool that enables you to **fetch**, **clean**, **prepare**, **label**, and **upload** articles
+from web sources in
 various
-formats such as `csv`, `json`, `xlsx`, and `parquet`. It provides you with a versatile way to access, analyze, and manage
+formats such as `csv`, `json`, `xlsx`, and `parquet`. It provides you with a versatile way to access, analyze, and
+manage
 diverse sets of data.
 
 > [!NOTE]
@@ -60,7 +62,7 @@ make start
 
 <div align="center">
 
-![Example](images/demo.gif)
+![Example](.github/images/demo.gif)
 
 </div>
 
@@ -86,7 +88,7 @@ Here is a summary for the purpose of each major module or component in **WDFAP**
 
 </details>
 
-## About Dependencies
+## Dependencies
 
 Here is an overview of the dependencies/packages used in the **WDFAP** along with their respective usage:
 
@@ -114,3 +116,9 @@ For now the available web sources are:
 
 - [Wikipedia](https://en.wikipedia.org/wiki/)
 - [Google News](https://news.google.com)
+
+## Contributing
+
+We appreciate your interest in contributing to our project! Your contributions help us improve and grow.
+
+Please check [Contributing](/CONTRIBUTING.md) for the contribution guidelines, and make sure to read [CODE_OF_CONDUCT](/CODE_OF_CONDUCT.md) document.

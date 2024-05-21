@@ -1,0 +1,24 @@
+name: Continuous Integration
+
+on: [ push ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "^3.10"
+
+      - name: Setup WDFAP
+        run: |
+          make setup
+
+      - name: Setup Development
+        run: |
+          make setup-dev
