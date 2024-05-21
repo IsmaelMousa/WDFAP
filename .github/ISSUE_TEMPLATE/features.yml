@@ -1,0 +1,14 @@
+name: '✨ Feature Request'
+description: Suggest a new feature or enhancement for WDFAP.
+labels: [ enhancement ]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: >
+        Describe the feature or enhancement and explain why it should be implemented.
+        Include a code example if applicable.
+    validations:
+      required: true
