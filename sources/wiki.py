@@ -123,6 +123,7 @@ class Wiki:
                 csv_writer.writerow(["ID",
                                      "Title",
                                      "URL",
+                                     "Body",
                                      "Introduction/Summary",
                                      "Sections/Headings",
                                      "References",

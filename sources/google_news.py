@@ -1,7 +1,6 @@
 import os
 import csv
 import json
-import random
 from datetime import datetime
 
 from bs4 import BeautifulSoup
@@ -50,68 +49,48 @@ class GoogleNews:
                 return article.text
             except Exception:
                 retries += 1
-                print(BLUE + "Work in progress, please wait..." + NORMAL)
+                print(BLUE + "Retrying to fetch content..." + NORMAL)
                 await asyncio.sleep(retry_delay)
         return ""
 
-    async def __fetch_articles(self, session: aiohttp.ClientSession, csv_writer: csv.writer,
-                               progress_bar: tqdm, num_articles: int) -> None:
+    async def __fetch_and_process_article(self, session: aiohttp.ClientSession, csv_writer: csv.writer,
+                                          progress_bar: tqdm, entry: dict) -> None:
         """
-        Fetch Google News articles asynchronously.
+        Fetch and process a single Google News article asynchronously.
 
         :param session: Aiohttp client session.
         :param csv_writer: CSV writer object.
         :param progress_bar: Progress bar object.
-        :param num_articles: Number of articles to fetch.
+        :param entry: Dictionary containing article information.
         :return: None
         """
-        sources = get_config().sources
-        google_news_url = sources.google_news
-        try:
-            async with session.get(google_news_url) as response:
-                response.raise_for_status()
-                rss_feed = await response.text()
+        title = entry.get("title", "")
+        link = entry.get("link", "")
+        summary = entry.get("summary", "")
+        published_date = entry.get("published", "")
+        summary_text = BeautifulSoup(summary, features="html.parser").get_text()
+        published_datetime = datetime.strptime(published_date, "%a, %d %b %Y %H:%M:%S %Z")
 
-                parsed_feed = feedparser.parse(rss_feed)
+        body = await self.__fetch_content(link)
 
-                articles = parsed_feed.entries
-                random.shuffle(articles)
+        data = {
+            "Title": title,
+            "URL": link,
+            "Summary": summary_text,
+            "Body": body,
+            "Published Date": published_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        self.__json_data.append(data)
 
-                article_number = 1
-                for entry in articles[:num_articles]:
-                    title = entry.get("title", "")
-                    link = entry.get("link", "")
-                    summary = entry.get("summary", "")
-                    published_date = entry.get("published", "")
-                    summary_text = BeautifulSoup(summary, features="html.parser").get_text()
-                    published_datetime = datetime.strptime(published_date, "%a, %d %b %Y %H:%M:%S %Z")
+        csv_writer.writerow([
+            title,
+            link,
+            summary_text,
+            body,
+            published_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        ])
 
-                    body = await self.__fetch_content(link)
-
-                    data = {
-                        "ID": article_number,
-                        "Title": title,
-                        "URL": link,
-                        "Summary": summary_text,
-                        "Body": body,
-                        "Published Date": published_datetime.strftime("%Y-%m-%d %H:%M:%S")
-                    }
-                    self.__json_data.append(data)
-
-                    csv_writer.writerow([
-                        article_number,
-                        title,
-                        link,
-                        summary_text,
-                        body,
-                        published_datetime.strftime("%Y-%m-%d %H:%M:%S")
-                    ])
-
-                    progress_bar.update(1)
-                    article_number += 1
-
-        except aiohttp.ClientError as e:
-            print(RED + f"Error fetching articles: {e}" + NORMAL)
+        progress_bar.update(1)
 
     async def scrape(self, num_articles: int) -> None:
         """
@@ -128,7 +107,6 @@ class GoogleNews:
             with open(csv_filename, "w", newline="", encoding="utf-8") as csv_file:
                 csv_writer = csv.writer(csv_file)
                 csv_writer.writerow([
-                    "ID",
                     "Title",
                     "URL",
                     "Summary",
@@ -139,7 +117,22 @@ class GoogleNews:
                 progress_bar = tqdm(total=num_articles, desc=BLUE + "Fetching Google News Articles" + NORMAL,
                                     unit="article")
 
-                await self.__fetch_articles(session, csv_writer, progress_bar, num_articles)
+                sources = get_config().sources
+                google_news_url = sources.google_news
+                async with session.get(google_news_url) as response:
+                    response.raise_for_status()
+                    rss_feed = await response.text()
+
+                    parsed_feed = feedparser.parse(rss_feed)
+
+                    articles = parsed_feed.entries[:num_articles]
+
+                    tasks = []
+                    for entry in articles:
+                        task = self.__fetch_and_process_article(session, csv_writer, progress_bar, entry)
+                        tasks.append(task)
+
+                    await asyncio.gather(*tasks)
 
                 progress_bar.close()
 
