@@ -10,7 +10,7 @@ start:
 	@echo "\e[34m----------------------------Welcome to WDFAP!----------------------------\e[0m"
 	@python3 main.py
 
-# Development
+# Development Stage
 setup-dev:
 	@echo "\e[34m----------------------------Setup Development----------------------------\e[0m"
 	@pip install .
@@ -28,10 +28,12 @@ coverage:
 	@echo "\e[34m----------------------------Check Coverage----------------------------\e[0m"
 	@pytest --cache-clear --cov --cov-report=term-missing
 
+# Automation Documentation
 docs:
 	@echo "\e[34m----------------------------Generate Documentation----------------------------\e[0m"
 	@sphinx-apidoc -o docs ..
 
+# Release Information
 version:
 	@echo "\e[34m----------------------------WDFAP Version----------------------------\e[0m"
 	@semantic-release -vv version --print
