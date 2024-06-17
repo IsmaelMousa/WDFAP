@@ -22,3 +22,20 @@ jobs:
       - name: Setup Development
         run: |
           make setup-dev
+
+      - name: Check Linting
+        run: |
+          make lint
+
+      - name: Check Testing
+        run: |
+          make test
+
+      - name: Check Coverage
+        run: |
+          make setup-dev
+
+      - name: Check Version
+        run: |
+          make version
+      
