@@ -1,5 +1,4 @@
-from sys import exit
-
+import sys
 import asyncio
 
 from sources import get_google_news, get_wiki
@@ -35,6 +34,6 @@ async def main():
                 break
             case "4":
                 print(RED + "Operation Canceled. Goodbye!" + NORMAL)
-                exit()
+                sys.exit()
             case _:
                 print(RED + "Invalid choice. Please try again." + NORMAL)
