@@ -1,6 +1,5 @@
 [MAIN]
 disable = C0114, C0209, W0511, W0707, W0718, W1203, W1514, R0801, R0903, R0904
-ignore = .venv
 jobs = 1
 suggestion-mode = no
 unsafe-load-any-extension = no
@@ -12,7 +11,7 @@ fail-under = 10.0
 output-format = text
 reports = no
 evaluation = max(0, 0 if fatal else 10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10))
-score = no
+score = yes
 
 [LOGGING]
 logging-modules = logging
@@ -20,6 +19,8 @@ logging-format-style = new
 
 [MISCELLANEOUS]
 notes = FIXME, XXX, TODO
+ignore-path=.venv, docs
+
 
 [SIMILARITIES]
 min-similarity-lines = 6
