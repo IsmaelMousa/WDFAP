@@ -1,6 +1,6 @@
 HTMLParser~=0.0.2
 beautifulsoup4~=4.12.3
-requests~=2.31.0
+requests~=2.32.3
 aiohttp~=3.9.5
 openpyxl~=3.1.2
 pandas~=2.2.2
@@ -12,3 +12,4 @@ praw~=7.7.1
 pyarrow~=16.0.0
 fastparquet~=2024.2.0
 PyYAML~=6.0.1
+python-semantic-release==9.8.2

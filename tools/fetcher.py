@@ -1,5 +1,4 @@
-from sys import exit
-
+import sys
 import asyncio
 
 from sources import get_google_news, get_wiki
@@ -12,29 +11,29 @@ NORMAL = "\033[0m"
 
 async def main():
     while True:
-        print(BLUE + "Which data would you like to fetch?" + NORMAL + "\n")
-        print(GREEN + ">> 1. Wikipedia Articles" + NORMAL)
-        print(GREEN + ">> 2. Google News Articles" + NORMAL)
-        print(GREEN + ">> 3. Both" + NORMAL)
-        print(RED + ">> 4. Cancel" + NORMAL)
+        print(BLUE + "Choose Your Data Source Option" + NORMAL + "\n")
+        print(NORMAL + ">> 1. " + GREEN + "Wikipedia" + NORMAL)
+        print(NORMAL + ">> 2. " + GREEN + "Google News" + NORMAL)
+        print(NORMAL + ">> 3. " + GREEN + "Both" + NORMAL)
+        print(NORMAL + ">> 4. " + RED + "Cancel" + NORMAL)
 
-        choice = input("\nEnter Your Choice >> " + BLUE)
+        choice = input(BLUE + "\nEnter Your Choice >> " + NORMAL)
 
         match choice:
             case "1":
-                print(BLUE + "Fetching Wikipedia Articles..." + NORMAL)
+                print(GREEN + "\nWikipedia Articles" + NORMAL)
                 await get_wiki()
                 break
             case "2":
-                print(BLUE + "Fetching Google News Articles..." + NORMAL)
+                print(GREEN + "\nGoogle News Articles" + NORMAL)
                 await get_google_news()
                 break
             case "3":
-                print(BLUE + "Fetching Both Wikipedia and Google News Articles..." + NORMAL)
+                print(GREEN + "\nBoth Wiki & Google News Articles" + NORMAL)
                 await asyncio.gather(get_wiki(), get_google_news())
                 break
             case "4":
-                print(RED + "Operation Canceled. Goodbye!" + NORMAL)
-                exit()
+                print(RED + "\nOperation Canceled. Goodbye!" + NORMAL)
+                sys.exit()
             case _:
-                print(RED + "Invalid choice. Please try again." + NORMAL)
+                print(RED + "\nInvalid choice. Please try again." + NORMAL)
