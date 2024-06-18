@@ -1,16 +1,21 @@
-from setuptools import setup, find_packages
 import json
 from pathlib import Path
+
+from setuptools import setup, find_packages
 
 with open(file="requirements.txt", mode="r") as f:
     requirements = f.read().splitlines()
 
-with open("README.md", "r") as readme:
-    long_description = readme.read()
+DESCRIPTION = ("Python tool for asynchronously fetching and storing"
+               " articles from web sources in various formats"
+               " such as csv, json, xlsx, and parquet.")
+
+with open(file="README.md", mode="r") as f:
+    long_description = f.read()
 
 version_file = Path(__file__).parent / "version.json"
 
-with open(version_file, "r") as f:
+with open(file=version_file, mode="r") as f:
     version = json.load(f)
 
 __version__ = f"{version['major']}.{version['minor']}.{version['patch']}"
@@ -37,8 +42,7 @@ setup(
     dependency_links=dependency_links,
     author="Ismael Mousa",
     author_email="ismaelramzimousa@gmail.com",
-    description="Python tool for asynchronously fetching and storing articles from web sources"
-                " in various formats such as csv, json, xlsx, and parquet",
+    description=DESCRIPTION,
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/IsmaelMousa/WDFAP",
