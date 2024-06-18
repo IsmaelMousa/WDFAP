@@ -7,7 +7,7 @@ updates:
     schedule:
       interval: "daily"
     commit-message:
-      prefix: dependabot::
+      prefix: dependabot
 
   # Python
   - package-ecosystem: "pip"
@@ -15,4 +15,4 @@ updates:
     schedule:
       interval: "monthly"
     commit-message:
-      prefix: dependabot::
+      prefix: dependabot
