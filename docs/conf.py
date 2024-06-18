@@ -11,7 +11,7 @@ myst_enable_extensions = ["deflist"]
 source_suffix = ['.rst', '.md']
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['build', 'Thumbs.db', '.DS_Store']
 
 html_theme = 'piccolo_theme'
 html_static_path = ['_static']
