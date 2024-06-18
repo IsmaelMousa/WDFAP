@@ -33,7 +33,7 @@ jobs:
 
       - name: Check Coverage
         run: |
-          make setup-dev
+          make coverage
 
       - name: Check Version
         run: |
