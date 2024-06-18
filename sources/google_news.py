@@ -1,15 +1,14 @@
 import os
-import csv
 import json
 from datetime import datetime
 
-from bs4 import BeautifulSoup
-from tqdm import tqdm
-import aiohttp
 import asyncio
+import aiohttp
 import feedparser
 import newspaper
 import pandas as pd
+from bs4 import BeautifulSoup
+from tqdm import tqdm
 
 from utils import get_config
 
@@ -20,56 +19,61 @@ NORMAL = "\033[0m"
 
 class GoogleNews:
     """
-    A class to scrape Google News articles asynchronously and store them in various formats.
+    A class to scrape news articles from Google News RSS feed
+    and save them in multiple formats.
 
     Attributes:
-        __base_dir (str): The base directory to save scraped data.
-        __json_data (list): A list to store JSON data for scraped articles.
+        __base_dir: The base directory to store the scraped articles.
+        __json_data: A list to store article data as dictionaries.
     """
 
     def __init__(self):
-        self.__json_data = []
-        self.__base_dir = "./data/google_news/"
+        self.__base_dir: str = "./data/google_news/"
+        self.__json_data: list = []
 
-    async def __fetch_content(self, url: str, max_retries: int = 3, retry_delay: float = 5.0) -> str:
+    @staticmethod
+    async def __fetch_content(url: str) -> str:
         """
-        Fetch the content of an article from the provided URL asynchronously.
+        Fetches the content of a news article from the given URL.
 
-        :param url: The URL of the article.
-        :param max_retries: Maximum number of retries in case of failure (default is 3).
-        :param retry_delay: Delay between retries in seconds (default is 5.0).
-        :return: The text content of the article.
+        :param url: the URL of the news article.
+        :return: the text content of the article.
         """
         retries = 0
-        while retries < max_retries:
+
+        while retries < 3:
             try:
                 article = newspaper.Article(url)
                 article.download()
                 article.parse()
+
                 return article.text
+
             except Exception:
                 retries += 1
-                print(BLUE + "Retrying to fetch content..." + NORMAL)
-                await asyncio.sleep(retry_delay)
+
         return ""
 
-    async def __fetch_and_process_article(self, session: aiohttp.ClientSession, csv_writer: csv.writer,
-                                          progress_bar: tqdm, entry: dict) -> None:
+    async def __fetch_and_process_article(self,
+                                          entry: dict,
+                                          progress_bar: tqdm) -> None:
         """
-        Fetch and process a single Google News article asynchronously.
+        Fetches and processes a single article entry from the RSS feed.
 
-        :param session: Aiohttp client session.
-        :param csv_writer: CSV writer object.
-        :param progress_bar: Progress bar object.
-        :param entry: Dictionary containing article information.
-        :return: None
+        :param entry: rhe dictionary containing article metadata.
+        :param progress_bar: the progress bar to update fetching progress.
         """
         title = entry.get("title", "")
+
         link = entry.get("link", "")
-        summary = entry.get("summary", "")
+
         published_date = entry.get("published", "")
+
+        summary = entry.get("summary", "")
         summary_text = BeautifulSoup(summary, features="html.parser").get_text()
-        published_datetime = datetime.strptime(published_date, "%a, %d %b %Y %H:%M:%S %Z")
+
+        published_datetime = datetime.strptime(published_date,
+                                               "%a, %d %b %Y %H:%M:%S %Z")
 
         body = await self.__fetch_content(link)
 
@@ -78,92 +82,84 @@ class GoogleNews:
             "URL": link,
             "Summary": summary_text,
             "Body": body,
-            "Published Date": published_datetime.strftime("%Y-%m-%d %H:%M:%S")
-        }
-        self.__json_data.append(data)
+            "Published Date": published_datetime.strftime("%Y-%m-%d %H:%M:%S")}
 
-        csv_writer.writerow([
-            title,
-            link,
-            summary_text,
-            body,
-            published_datetime.strftime("%Y-%m-%d %H:%M:%S")
-        ])
+        self.__json_data.append(data)
 
         progress_bar.update(1)
 
     async def scrape(self, num_articles: int) -> None:
         """
-        Scrapes Google News articles asynchronously and stores them in various formats.
+        Scrapes the specified number of articles from Google News RSS feed.
 
-        :param num_articles: The number of articles to fetch.
+        :param num_articles: the number of articles to scrape.
         :return: None
         """
         async with aiohttp.ClientSession() as session:
             if not os.path.exists(self.__base_dir):
                 os.makedirs(self.__base_dir)
 
-            csv_filename = os.path.join(self.__base_dir, "articles.csv")
-            with open(csv_filename, "w", newline="", encoding="utf-8") as csv_file:
-                csv_writer = csv.writer(csv_file)
-                csv_writer.writerow([
-                    "Title",
-                    "URL",
-                    "Summary",
-                    "Body",
-                    "Published Date"
-                ])
+            csv_file = os.path.join(self.__base_dir, "articles.csv")
 
-                progress_bar = tqdm(total=num_articles, desc=BLUE + "Fetching Google News Articles" + NORMAL,
-                                    unit="article")
+            desc = BLUE + "Fetching Google News Articles" + NORMAL
+            progress_bar = tqdm(total=num_articles,
+                                desc=desc,
+                                unit="article")
 
-                sources = get_config().sources
-                google_news_url = sources.google_news
-                async with session.get(google_news_url) as response:
-                    response.raise_for_status()
-                    rss_feed = await response.text()
+            google_news_url = get_config().sources.google_news
 
-                    parsed_feed = feedparser.parse(rss_feed)
+            async with session.get(google_news_url) as response:
+                response.raise_for_status()
 
-                    articles = parsed_feed.entries[:num_articles]
+                rss_feed = await response.text()
+                parsed_feed = feedparser.parse(rss_feed)
 
-                    tasks = []
-                    for entry in articles:
-                        task = self.__fetch_and_process_article(session, csv_writer, progress_bar, entry)
-                        tasks.append(task)
+                articles = parsed_feed.entries[:num_articles]
 
-                    await asyncio.gather(*tasks)
+                tasks = [self.__fetch_and_process_article(entry, progress_bar)
+                         for entry in articles]
 
-                progress_bar.close()
+                await asyncio.gather(*tasks)
 
-            json_filename = os.path.join(self.__base_dir, "articles.json")
-            with open(json_filename, "w", encoding="utf-8") as json_file:
-                json.dump(self.__json_data, json_file, ensure_ascii=False, indent=4)
+            progress_bar.close()
 
-            df = pd.DataFrame(self.__json_data)
-            excel_filename = os.path.join(self.__base_dir, "articles.xlsx")
-            df.to_excel(excel_filename, index=False)
+            data_frame = pd.DataFrame(data=self.__json_data)
+            data_frame.to_csv(path_or_buf=csv_file, index=False)
 
-            parquet_filename = os.path.join(self.__base_dir, "articles.parquet")
-            df.to_parquet(parquet_filename, index=False)
+            json_file = os.path.join(self.__base_dir, "articles.json")
+
+            with open(file=json_file, mode="w", encoding="utf-8") as json_file:
+                json.dump(obj=self.__json_data,
+                          fp=json_file,
+                          ensure_ascii=False,
+                          indent=4)
+
+            excel_file = os.path.join(self.__base_dir, "articles.xlsx")
+            data_frame.to_excel(excel_file, index=False)
+
+            parquet_file = os.path.join(self.__base_dir, "articles.parquet")
+            data_frame.to_parquet(parquet_file, index=False)
 
 
 async def get_google_news() -> None:
     """
-    The main function of the Google News scraper.
-
-    Prompts the user to enter the number of articles to fetch, then starts the scraping process.
+    Prompts the user for the number of articles to scrape
+    and starts the scraping process.
 
     :return: None
     """
     scraper = GoogleNews()
+
     while True:
         try:
-            num_articles = int(input("\n" + "Enter The Number of Articles to Fetch >> " + BLUE))
+            num_articles = int(input(BLUE + "\nHow Many >> " + NORMAL))
+
             if num_articles > 0:
                 break
-            else:
-                print(RED + "Please enter a positive integer number!" + NORMAL)
+
+            print(RED + "Please enter a positive integer number!" + NORMAL)
+
         except ValueError:
             print(RED + "Please enter a valid integer number!" + NORMAL)
-    await scraper.scrape(num_articles)
+
+    await scraper.scrape(num_articles=num_articles)
