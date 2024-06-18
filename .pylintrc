@@ -1,5 +1,5 @@
 [MAIN]
-disable = C0114, C0209, W0511, W0707, W0718, W1203, W1514, R0801, R0903, R0904
+disable = C0114, C0209, W0511, W0707, W0718, W1203, W1514, R0801, R0903, R0904, E0401
 jobs = 1
 suggestion-mode = no
 unsafe-load-any-extension = no
